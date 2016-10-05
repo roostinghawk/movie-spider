@@ -1,15 +1,18 @@
 package com.leadingsoft.spider;
 
 import com.leadingsoft.spider.pipeline.MovieFilePipeline;
-import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
+import us.codecraft.webmagic.scheduler.QueueScheduler;
+import us.codecraft.webmagic.scheduler.component.BloomFilterDuplicateRemover;
 
 /**
  * Created by liuw on 2016/10/4.
  */
 public class TestMovie implements PageProcessor {
+
+    public static final String URL_START = "https://movie.douban.com/tag";
 
     public static final String URL_LIST = "https://movie\\.douban\\.com/tag/*";
 
@@ -21,8 +24,13 @@ public class TestMovie implements PageProcessor {
 
     @Override
     public void process(Page page) {
+        // 开始页
+        if(page.getUrl().toString().equals(URL_START)) {
+            // 添加所有类型
+            page.addTargetRequests(page.getHtml().$("#content > div > div.article > a[name=\"类型\"] + table").links().all());
+        }
         //列表页
-        if (page.getUrl().regex(URL_LIST).match()) {
+        else if (page.getUrl().regex(URL_LIST).match()) {
             // 添加详细页
             page.addTargetRequests(page.getHtml().xpath("//div[@class=\"pl2\"]").links().regex(URL_POST).all());
             // 添加下一页的URL
@@ -40,9 +48,12 @@ public class TestMovie implements PageProcessor {
 
     public static void main(String[] args) {
         Spider.create(new TestMovie())
+                //.addUrl(URL_START)
                 .addUrl("https://movie.douban.com/tag/%E7%A7%91%E5%B9%BB")
                 //.addUrl("https://movie.douban.com/subject/25786060/")
                 .addPipeline(new MovieFilePipeline())
+                // 去掉重复的Url
+                .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(10000000)))
                 .run();
     }
 
@@ -58,5 +69,6 @@ public class TestMovie implements PageProcessor {
         page.putField("IMDB 连接", page.getHtml().$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").all());
         page.putField("Url", page.getUrl().toString());
         // TODO: 地区语言
+        //page.putField("制片国家/地区", page.getHtml().$("div#content div#info span.pl:containsOwn(制片国家/地区)::after", "innerHtml").all());
     }
 }

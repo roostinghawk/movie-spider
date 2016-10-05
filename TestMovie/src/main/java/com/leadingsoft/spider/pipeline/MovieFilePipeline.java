@@ -18,7 +18,7 @@ import java.util.Map;
 public class MovieFilePipeline extends FilePipeline {
 
     public void process(ResultItems resultItems, Task task) {
-        String path = "H:\\test\\result.csv";
+        String path = "H:\\test\\科幻.csv";
 
         try {
             PrintWriter e = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.getFile(path), true), "UTF-8"));
