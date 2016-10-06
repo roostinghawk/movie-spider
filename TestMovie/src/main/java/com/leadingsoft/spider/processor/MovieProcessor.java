@@ -1,18 +1,15 @@
-package com.leadingsoft.spider;
+package com.leadingsoft.spider.processor;
 
 import com.leadingsoft.spider.pipeline.MovieFilePipeline;
-import us.codecraft.webmagic.*;
+import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
-import us.codecraft.webmagic.scheduler.QueueScheduler;
-import us.codecraft.webmagic.scheduler.component.BloomFilterDuplicateRemover;
 
 /**
- * Created by liuw on 2016/10/4.
+ * Created by liuw on 2016/10/6.
  */
-public class TestMovie implements PageProcessor {
-
-    public static final String URL_START = "https://movie.douban.com/tag";
+public class MovieProcessor implements PageProcessor {
 
     public static final String URL_LIST = "https://movie\\.douban\\.com/tag/*";
 
@@ -24,18 +21,13 @@ public class TestMovie implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        // 开始页
-        if(page.getUrl().toString().equals(URL_START)) {
-            // 添加所有类型
-            page.addTargetRequests(page.getHtml().$("#content > div > div.article > a[name=\"类型\"] + table").links().all());
-        }
         //列表页
-        else if (page.getUrl().regex(URL_LIST).match()) {
+        if (page.getUrl().regex(URL_LIST).match()) {
             // 添加详细页
             page.addTargetRequests(page.getHtml().xpath("//div[@class=\"pl2\"]").links().regex(URL_POST).all());
             // 添加下一页的URL
             page.addTargetRequests(page.getHtml().xpath("//span[@class=\"next\"]/a").links().all());
-        //详情页
+            //详情页
         } else {
             this.putItemsToPage(page);
         }
@@ -44,18 +36,6 @@ public class TestMovie implements PageProcessor {
     @Override
     public Site getSite() {
         return site;
-    }
-
-    public static void main(String[] args) {
-        Spider.create(new TestMovie())
-                .addUrl(URL_START)
-                //.addUrl("https://movie.douban.com/tag/%E7%A7%91%E5%B9%BB")
-                //.addUrl("https://movie.douban.com/tag/%E7%A7%91%E5%B9%BB?start=1040&type=T")
-                //.addUrl("https://movie.douban.com/subject/25786060/")
-                //.addPipeline(new MovieFilePipeline())
-                        // 去掉重复的Url
-                //.setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(10000000)))
-                .run();
     }
 
     private void putItemsToPage(Page page){

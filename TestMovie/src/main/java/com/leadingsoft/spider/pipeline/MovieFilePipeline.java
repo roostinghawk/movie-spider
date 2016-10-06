@@ -17,8 +17,12 @@ import java.util.Map;
  */
 public class MovieFilePipeline extends FilePipeline {
 
+    public MovieFilePipeline (String path) {
+        super(path);
+    }
+
     public void process(ResultItems resultItems, Task task) {
-        String path = "H:\\test\\科幻.csv";
+        String path = this.path + "output.csv";
 
         try {
             PrintWriter e = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.getFile(path), true), "UTF-8"));
@@ -29,7 +33,8 @@ public class MovieFilePipeline extends FilePipeline {
 
             e.println();
             e.close();
-        } catch (IOException var10) {
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
 
     }
