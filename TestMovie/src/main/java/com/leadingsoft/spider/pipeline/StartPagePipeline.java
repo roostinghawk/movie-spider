@@ -12,6 +12,7 @@ import java.util.List;
  * Created by liuw on 2016/10/6.
  */
 public class StartPagePipeline extends FilePipeline {
+    @Override
     public void process(ResultItems resultItems, Task task) {
         String path = Consts.ROOT_PATH + Consts.FILE_URLS;
 

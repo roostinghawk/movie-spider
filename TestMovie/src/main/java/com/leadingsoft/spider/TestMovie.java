@@ -20,7 +20,9 @@ public class TestMovie implements PageProcessor {
 
     private Site site = Site
             .me()
-            .setDomain("movie.douban.com");
+            .setDomain("movie.douban.com")
+            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36");
 
     @Override
     public void process(Page page) {
@@ -48,14 +50,15 @@ public class TestMovie implements PageProcessor {
 
     public static void main(String[] args) {
         Spider.create(new TestMovie())
-                .addUrl(URL_START)
+                //.addUrl(URL_START)
                 //.addUrl("https://movie.douban.com/tag/%E7%A7%91%E5%B9%BB")
                 //.addUrl("https://movie.douban.com/tag/%E7%A7%91%E5%B9%BB?start=1040&type=T")
-                //.addUrl("https://movie.douban.com/subject/25786060/")
-                //.addPipeline(new MovieFilePipeline())
+                .addUrl("https://movie.douban.com/subject/26683290/")
+                .addPipeline(new MovieFilePipeline(Consts.ROOT_PATH + "dd"))
                         // 去掉重复的Url
                 //.setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(10000000)))
                 .run();
+
     }
 
     private void putItemsToPage(Page page){
@@ -69,7 +72,10 @@ public class TestMovie implements PageProcessor {
         page.putField("片长", page.getHtml().$("div#content div#info span.pl:containsOwn(片长) + span[property=\"v:runtime\"]", "innerHtml").all());
         page.putField("IMDB 连接", page.getHtml().$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").all());
         page.putField("Url", page.getUrl().toString());
-        // TODO: 地区语言
-        //page.putField("制片国家/地区", page.getHtml().$("div#content div#info span.pl:containsOwn(制片国家/地区)::after", "innerHtml").all());
+        page.putField("制片国家/地区", page.getHtml().regex("制片国家/地区:</span>.*?<br>").toString()
+                                                   .replace("制片国家/地区:</span>", "")
+                                                   .replace("<br>", "").replace("\n", "").trim());
+        page.putField("语言", page.getHtml().regex("语言:</span>.*?<br>").toString()
+                .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
     }
 }

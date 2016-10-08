@@ -49,7 +49,10 @@ public class MovieProcessor implements PageProcessor {
         page.putField("片长", page.getHtml().$("div#content div#info span.pl:containsOwn(片长) + span[property=\"v:runtime\"]", "innerHtml").all());
         page.putField("IMDB 连接", page.getHtml().$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").all());
         page.putField("Url", page.getUrl().toString());
-        // TODO: 地区语言
-        //page.putField("制片国家/地区", page.getHtml().$("div#content div#info span.pl:containsOwn(制片国家/地区)::after", "innerHtml").all());
+        page.putField("制片国家/地区", page.getHtml().regex("制片国家/地区:</span>.*?<br>").toString()
+                .replace("制片国家/地区:</span>", "")
+                .replace("<br>", "").replace("\n", "").trim());
+        page.putField("语言", page.getHtml().regex("语言:</span>.*?<br>").toString()
+                .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
     }
 }
