@@ -69,13 +69,31 @@ public class TestMovie implements PageProcessor {
         page.putField("主演", page.getHtml().$("div#content div#info span.actor a[rel=\"v:starring\"]", "innerHtml").all());
         page.putField("类型", page.getHtml().$("div#content div#info span.pl:containsOwn(类型) ~ span[property=\"v:genre\"", "innerHtml").all());
         page.putField("上映日期", page.getHtml().$("div#content div#info span.pl:containsOwn(上映日期) ~ span[property=\"v:initialReleaseDate\"]", "innerHtml").all());
-        page.putField("片长", page.getHtml().$("div#content div#info span.pl:containsOwn(片长) + span[property=\"v:runtime\"]", "innerHtml").all());
-        page.putField("IMDB 连接", page.getHtml().$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").all());
+
         page.putField("Url", page.getUrl().toString());
         page.putField("制片国家/地区", page.getHtml().regex("制片国家/地区:</span>.*?<br>").toString()
                                                    .replace("制片国家/地区:</span>", "")
                                                    .replace("<br>", "").replace("\n", "").trim());
         page.putField("语言", page.getHtml().regex("语言:</span>.*?<br>").toString()
                 .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
+
+        page.putField("片长", page.getHtml().$("div#content div#info span.pl:containsOwn(片长) + span[property=\"v:runtime\"]", "innerHtml").all());
+
+        page.putField("又名", page.getHtml().regex("又名:</span>.*?<br>").toString()
+                .replace("又名:</span>", "").replace("<br>", "").replace("\n", "").trim());
+
+        page.putField("IMDB 连接", page.getHtml().$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").all());
+
+        // 评分
+        page.putField("豆瓣评分", page.getHtml().$("div#interest_sectl strong.rating_num", "innerHtml").all());
+        // 评价人数
+        page.putField("评价人数", page.getHtml().$("div#interest_sectl span[property=\"v:votes\"]", "innerHtml").all());
+        // 五星占比
+        page.putField("五星占比", page.getHtml().$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(2)", "innerHtml").all());
+        // 短评数
+        page.putField("短评数", page.getHtml().$("#comments-section > div.mod-hd > h2 > span > a", "innerHtml").get()
+                .replace("全部", "").replace("条", ""));
+        // 影评数
+        page.putField("影评数", page.getHtml().$("#review_section > div.mod-hd > h2 > span > a", "innerHtml").get().replace("全部", ""));
     }
 }

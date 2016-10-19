@@ -35,7 +35,7 @@ public class Application {
             Spider.create(new MovieProcessor())
                     .addUrl(urls.get(i))
                     .addPipeline(new MovieFilePipeline(Consts.ROOT_PATH + threadNum))
-                    .thread(threadNum) // threadNum should be more than one
+                    .thread(1) // threadNum should be more than one
                     .run();  // 多个线程跑会导致IP被封，暂时使用单线程的方法,单线程也会被封，需要考虑频率问题
                     //.start(); // run async
         //}
