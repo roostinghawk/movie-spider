@@ -11,8 +11,8 @@
     <properties>
         <profile.no-liquibase></profile.no-liquibase>
         <profile.swagger></profile.swagger>
-        <logging.path>/var/log/operation</logging.path>
-        <logging.level>DEBUG</logging.level>
+        <logging.path>H:/test/error.log</logging.path>
+        <logging.level>WARN</logging.level>
     </properties>
 
     <dependencies>

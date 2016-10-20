@@ -50,11 +50,54 @@ public class Movie extends AbstractPersistable<Long> {
     private String writer;
 
     /**
+     * 主演
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String actor;
+
+
+    /**
+     * 类型
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String genre;
+
+    /**
+     * 上映日期
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String releaseDate;
+
+    /**
+     * IMDB
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String imdb;
+
+    /**
+     * 片长
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String runTime;
+
+    /**
      * 制片
      */
     @Length(max = 255)
     @Column(length = 255)
     private String producer;
+
+    /**
+     * 制片国家/地区
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String zone;
 
     /**
      * 语言
@@ -64,24 +107,45 @@ public class Movie extends AbstractPersistable<Long> {
     private String language;
 
     /**
-     * 主演
+     * 又名
      */
     @Length(max = 255)
     @Column(length = 255)
-    private String actor;
+    private String otherName;
 
     /**
-     * 地区
+     * 评分
      */
     @Length(max = 255)
     @Column(length = 255)
-    private String zone;
+    private String rating;
 
     /**
-     * 时长
+     * 评价人数
      */
     @Length(max = 255)
     @Column(length = 255)
-    private String duration;
+    private String ratingCount;
+
+    /**
+     * 五星评比
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String fiveStarRating;
+
+    /**
+     * 短评数
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String CommentCount;
+
+    /**
+     * 影评数
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String reviewCount;
 
 }

@@ -1,30 +1,15 @@
 package com.leadingsoft.spider;
 
-import com.leadingsoft.spider.pipeline.MovieDbPipeline;
-import com.leadingsoft.spider.pipeline.MovieFilePipeline;
-import com.leadingsoft.spider.pipeline.StartPagePipeline;
-import com.leadingsoft.spider.processor.MovieProcessor;
-import com.leadingsoft.spider.processor.StartPageProcessor;
-import com.leadingsoft.spider.service.DoubanService;
+import com.leadingsoft.spider.service.douban.DoubanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import us.codecraft.webmagic.Spider;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Created by liuw on 2016/10/6.
@@ -53,7 +38,7 @@ public class Application {
 //    public static void main(String[] args) throws IOException {
 //
 //        // 取得导航页所有的子URL
-//        Spider.create(new StartPageProcessor())
+//        Spider.create(new DoubanStartPageProcessor())
 //                .addUrl(URL_START)
 //                .addPipeline(new StartPagePipeline())
 //                .run();
@@ -65,7 +50,7 @@ public class Application {
 //        //for (int i = 5; i < urls.size(); i++) {
 //        int i = 7;
 //            int threadNum = i + 1;
-//            Spider.create(new MovieProcessor())
+//            Spider.create(new DoubanMovieProcessor())
 //                    //.addUrl(urls.get(i))
 //                    .addUrl("https://movie.douban.com/subject/26683290/")
 //                    //.addPipeline(new MovieFilePipeline(Consts.ROOT_PATH + threadNum))

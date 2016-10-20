@@ -27,6 +27,8 @@ public class MovieDbPipeline implements Pipeline {
     @Override
     public void process(ResultItems resultItems, Task task){
         Movie movie = (Movie)resultItems.get("movie");
-        this.movieRepository.save(movie);
+        if(movie != null) {
+            this.movieRepository.save(movie);
+        }
     }
 }

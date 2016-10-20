@@ -1,4 +1,4 @@
-package com.leadingsoft.spider.processor;
+package com.leadingsoft.spider.processor.douban;
 
 import com.leadingsoft.spider.pipeline.MovieFilePipeline;
 import us.codecraft.webmagic.Page;
@@ -9,7 +9,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 /**
  * Created by liuw on 2016/10/6.
  */
-public class StartPageProcessor implements PageProcessor {
+public class DoubanStartPageProcessor implements PageProcessor {
 
 
     private Site site = Site

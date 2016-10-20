@@ -1,5 +1,6 @@
 package com.leadingsoft.spider.pipeline;
 
+import com.leadingsoft.spider.model.Movie;
 import org.apache.commons.codec.digest.DigestUtils;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
@@ -26,11 +27,35 @@ public class MovieFilePipeline extends FilePipeline {
         String path = this.path + "output.csv";
 
         try {
+
+            Movie movie = resultItems.get("movie");
+            if(movie == null) {
+                return;
+            }
+
             PrintWriter e = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.getFile(path), true), "UTF-8"));
 
-            resultItems.getAll().entrySet().forEach(item -> {
-                e.print(item.getValue() + "\t");
-            });
+            e.print(movie.getName() + "\t");
+            e.print(movie.getUrl() + "\t");
+            e.print(movie.getDirector() + "\t");
+            e.print(movie.getWriter() + "\t");
+            e.print(movie.getActor() + "\t");
+            e.print(movie.getGenre() + "\t");
+            e.print(movie.getReleaseDate() + "\t");
+            e.print(movie.getImdb() + "\t");
+            e.print(movie.getRunTime() + "\t");
+            e.print(movie.getZone() + "\t");
+            e.print(movie.getLanguage() + "\t");
+            e.print(movie.getOtherName() + "\t");
+            e.print(movie.getRating() + "\t");
+            e.print(movie.getRatingCount() + "\t");
+            e.print(movie.getFiveStarRating() + "\t");
+            e.print(movie.getCommentCount() + "\t");
+            e.print(movie.getReviewCount() + "\t");
+
+//            resultItems.getAll().entrySet().forEach(item -> {
+//                e.print(item.getValue() + "\t");
+//            });
 
             e.println();
             e.close();
