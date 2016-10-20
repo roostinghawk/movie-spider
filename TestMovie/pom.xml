@@ -8,7 +8,34 @@
     <artifactId>TestMovie</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <profile.no-liquibase></profile.no-liquibase>
+        <profile.swagger></profile.swagger>
+        <logging.path>/var/log/operation</logging.path>
+        <logging.level>DEBUG</logging.level>
+    </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>com.leadingsoft.bizfuse</groupId>
+            <artifactId>bizfuse-web-common</artifactId>
+            <version>3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leadingsoft.bizfuse</groupId>
+            <artifactId>bizfuse-model-common</artifactId>
+            <version>3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.39</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.192</version>
+        </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -25,10 +52,43 @@
             <artifactId>webmagic-extension</artifactId>
             <version>0.5.3</version>
         </dependency>
+        <!-- This version is for ScopeMetadataResolver -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>4.3.3.RELEASE</version>
+        </dependency>
+        <!-- Use old lang, because us.codecraft dependes on old version -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+            <groupId>com.mysema.maven</groupId>
+            <artifactId>apt-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -40,6 +100,28 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev-liuwei</id>
+            <properties>
+                <!-- log configuration -->
+                <logback.loglevel>DEBUG</logback.loglevel>
+                <!-- default Spring profiles -->
+                <spring.profiles.active>dev-liuwei</spring.profiles.active>
+
+                <datasource.driver>com.mysql.jdbc.Driver</datasource.driver>
+                <datasource.url>jdbc:mysql://127.0.0.1/spider?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true</datasource.url>
+                <datasource.dialect>org.hibernate.dialect.MySQL5InnoDBDialect</datasource.dialect>
+                <datasource.username>root</datasource.username>
+                <datasource.password>rd123456</datasource.password>
+                <datasource.jpa.hibernate.ddl-auto>create-drop</datasource.jpa.hibernate.ddl-auto>
+                <datasource.jpa.show-sql>true</datasource.jpa.show-sql>
+                <spring.cloud.instance.name>Movie-Spider-liuwei</spring.cloud.instance.name>
+
+            </properties>
+        </profile>
+    </profiles>
 
 
 </project>

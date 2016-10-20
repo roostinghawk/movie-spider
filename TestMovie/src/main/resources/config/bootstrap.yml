@@ -1,0 +1,10 @@
+# ===================================================================
+# Spring Cloud Config bootstrap configuration
+# ===================================================================
+
+spring:
+    application:
+        name: @spring.cloud.instance.name@
+
+encrypt:
+    failOnError: false
