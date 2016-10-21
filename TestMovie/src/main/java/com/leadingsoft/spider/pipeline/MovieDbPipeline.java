@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Date;
 
 /**
  * Created by liuw on 2016/10/4.
@@ -94,15 +95,21 @@ public class MovieDbPipeline implements Pipeline {
             movieReview.setRating(dto.getRating());
             movieReview.setRatingCount(dto.getRatingCount());
             movieReview.setFiveStarRating(dto.getFiveStarRating());
+            movieReview.setFourStarRating(dto.getFourStarRating());
+            movieReview.setThreeStarRating(dto.getThreeStarRating());
+            movieReview.setTwoStarRating(dto.getTwoStarRating());
+            movieReview.setOneStarRating(dto.getOneStarRating());
             movieReview.setCommentCount(dto.getCommentCount());
             movieReview.setReviewCount(dto.getReviewCount());
             movieReview.setDoubanId(dto.getDoubanId());
-
-            // 保存评论
-            movie.setMovieReview(this.movieReviewRepository.save(movieReview));
+            movieReview.setCreateTime(new Date());
 
             // 保存电影
-            this.movieRepository.save(movie);
+            Movie savedMovie = this.movieRepository.save(movie);
+
+            // 保存评论
+            movieReview.setMovie(savedMovie);
+            this.movieReviewRepository.save(movieReview);
         }
     }
 

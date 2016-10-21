@@ -120,10 +120,4 @@ public class Movie extends AbstractPersistable<Long> {
     @Column(length = 255)
     private String otherName;
 
-    /**
-     * 豆瓣中的电影评价
-     */
-    @OneToOne
-    private MovieReview movieReview;
-
 }

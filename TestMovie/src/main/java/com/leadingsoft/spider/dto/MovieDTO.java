@@ -101,6 +101,26 @@ public class MovieDTO extends AbstractDTO {
     private String fiveStarRating;
 
     /**
+     * 四评比
+     */
+    private String fourStarRating;
+
+    /**
+     * 三星评比
+     */
+    private String threeStarRating;
+
+    /**
+     * 二星评比
+     */
+    private String twoStarRating;
+
+    /**
+     * 一星评比
+     */
+    private String oneStarRating;
+
+    /**
      * 短评数
      */
     private String CommentCount;

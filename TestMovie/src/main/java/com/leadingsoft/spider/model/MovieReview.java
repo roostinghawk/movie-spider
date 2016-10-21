@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import sun.reflect.generics.repository.AbstractRepository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * 电影评价
@@ -47,6 +47,34 @@ public class MovieReview extends AbstractPersistable<Long> {
     private String fiveStarRating;
 
     /**
+     * 四评比
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String fourStarRating;
+
+    /**
+     * 三星评比
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String threeStarRating;
+
+    /**
+     * 二星评比
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String twoStarRating;
+
+    /**
+     * 一星评比
+     */
+    @Length(max = 255)
+    @Column(length = 255)
+    private String oneStarRating;
+
+    /**
      * 短评数
      */
     @Length(max = 255)
@@ -59,4 +87,17 @@ public class MovieReview extends AbstractPersistable<Long> {
     @Length(max = 255)
     @Column(length = 255)
     private String reviewCount;
+
+    /**
+     * 导入时间
+     */
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
+    /**
+     * 电影
+     */
+    @OneToOne
+    private Movie movie;
 }

@@ -133,6 +133,14 @@ public class DoubanMovieProcessor implements PageProcessor {
         dto.setRatingCount(html.$("div#interest_sectl span[property=\"v:votes\"]", "innerHtml").get());
         // 五星占比
         dto.setFiveStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(2)", "innerHtml").get());
+        // 四星占比
+        dto.setFourStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(4)", "innerHtml").get());
+        // 三星占比
+        dto.setThreeStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(6)", "innerHtml").get());
+        // 二星占比
+        dto.setTwoStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(8)", "innerHtml").get());
+        // 一星占比
+        dto.setOneStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(10)", "innerHtml").get());
         // 短评数
         String commentCountStr = html.$("#comments-section > div.mod-hd > h2 > span > a", "innerHtml").get();
         if(commentCountStr != null) {
