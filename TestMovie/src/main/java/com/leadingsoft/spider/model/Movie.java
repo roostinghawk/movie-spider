@@ -19,6 +19,11 @@ public class Movie extends AbstractPersistable<Long> {
 
 
     /**
+     * 豆瓣电影中的Id
+     */
+    private Long doubanId;
+
+    /**
      * 电影名称
      */
     @NotBlank

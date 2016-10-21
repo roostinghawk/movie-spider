@@ -7,9 +7,12 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
+import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by liuw on 2016/10/6.
@@ -19,6 +22,8 @@ public class DoubanMovieProcessor implements PageProcessor {
     public static final String URL_LIST = "https://movie\\.douban\\.com/tag/*";
 
     public static final String URL_POST = "https://movie\\.douban\\.com/subject/\\w+";
+
+    public static final String URL_ID_PATTEN = "https://movie\\.douban\\.com/subject/([0-9]+)/";
 
     private Site site = Site
             .me()
@@ -65,9 +70,21 @@ public class DoubanMovieProcessor implements PageProcessor {
         Movie movie = new Movie();
 
         // 片名
-        movie.setName(html.$("div#content h1 span:first-child", "innerHtml").get());
+        String name = html.$("div#content h1 span:first-child", "innerHtml").get();
+        // 片名是必要条件
+        if(name == null) {
+            return;
+        }
+        movie.setName(name);
         // Url
-        movie.setUrl(page.getUrl().toString());
+        String url = page.getUrl().toString();
+        movie.setUrl(url);
+        // 从Url中取得Id
+        Matcher matcher= Pattern.compile(URL_ID_PATTEN).matcher(url);
+        if(matcher.matches()){
+            movie.setDoubanId(Long.parseLong(matcher.group(1)));
+        }
+
         // 导演
         List<String> directorList = html.$("div#content div#info span.pl:containsOwn(导演) + span a", "innerHtml").all();
         if(directorList != null && directorList.size() > 0) {
@@ -101,15 +118,24 @@ public class DoubanMovieProcessor implements PageProcessor {
             movie.setRunTime(Arrays.toString(runTimeList.toArray()));
         }
         // 制片国家/地区
-        movie.setZone(html.regex("制片国家/地区:</span>.*?<br>").toString()
-                .replace("制片国家/地区:</span>", "")
-                .replace("<br>", "").replace("\n", "").trim());
+        Selectable zoneRegexResult =  html.regex("制片国家/地区:</span>.*?<br>");
+        if(zoneRegexResult != null && zoneRegexResult.toString() != null) {
+            movie.setZone(zoneRegexResult.toString()
+                    .replace("制片国家/地区:</span>", "")
+                    .replace("<br>", "").replace("\n", "").trim());
+        }
         // 语言
-        movie.setLanguage(html.regex("语言:</span>.*?<br>").toString()
-                .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
+        Selectable langRegexResult = html.regex("语言:</span>.*?<br>");
+        if(langRegexResult != null && langRegexResult.toString() != null){
+            movie.setLanguage(langRegexResult.toString()
+                    .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
+        }
         // 又名
-        movie.setOtherName(html.regex("又名:</span>.*?<br>").toString()
-                .replace("又名:</span>", "").replace("<br>", "").replace("\n", "").trim());
+        Selectable otherNameRegexResult = html.regex("又名:</span>.*?<br>");
+        if(otherNameRegexResult != null && otherNameRegexResult.toString() != null) {
+            movie.setOtherName(otherNameRegexResult.toString()
+                    .replace("又名:</span>", "").replace("<br>", "").replace("\n", "").trim());
+        }
         // 评分
         movie.setRating(html.$("div#interest_sectl strong.rating_num", "innerHtml").get());
         // 评价人数
@@ -117,10 +143,15 @@ public class DoubanMovieProcessor implements PageProcessor {
         // 五星占比
         movie.setFiveStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(2)", "innerHtml").get());
         // 短评数
-        movie.setCommentCount(html.$("#comments-section > div.mod-hd > h2 > span > a", "innerHtml").get()
-                .replace("全部", "").replace("条", ""));
+        String commentCountStr = html.$("#comments-section > div.mod-hd > h2 > span > a", "innerHtml").get();
+        if(commentCountStr != null) {
+            movie.setCommentCount(commentCountStr.replace("全部", "").replace("条", ""));
+        }
         // 影评数
-        movie.setReviewCount(html.$("#review_section > div.mod-hd > h2 > span > a", "innerHtml").get().replace("全部", ""));
+        String reviewCountStr = html.$("#review_section > div.mod-hd > h2 > span > a", "innerHtml").get();
+        if(reviewCountStr != null) {
+            movie.setReviewCount(reviewCountStr.replace("全部", ""));
+        }
 
         page.putField("movie", movie);
     }
