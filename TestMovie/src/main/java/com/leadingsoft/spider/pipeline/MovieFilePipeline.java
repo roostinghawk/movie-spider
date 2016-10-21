@@ -37,21 +37,21 @@ public class MovieFilePipeline extends FilePipeline {
 
             e.print(movie.getName() + "\t");
             e.print(movie.getUrl() + "\t");
-            e.print(movie.getDirector() + "\t");
-            e.print(movie.getWriter() + "\t");
-            e.print(movie.getActor() + "\t");
-            e.print(movie.getGenre() + "\t");
-            e.print(movie.getReleaseDate() + "\t");
-            e.print(movie.getImdb() + "\t");
-            e.print(movie.getRunTime() + "\t");
-            e.print(movie.getZone() + "\t");
-            e.print(movie.getLanguage() + "\t");
-            e.print(movie.getOtherName() + "\t");
-            e.print(movie.getRating() + "\t");
-            e.print(movie.getRatingCount() + "\t");
-            e.print(movie.getFiveStarRating() + "\t");
-            e.print(movie.getCommentCount() + "\t");
-            e.print(movie.getReviewCount() + "\t");
+//            e.print(movie.getDirector() + "\t");
+//            e.print(movie.getWriter() + "\t");
+//            e.print(movie.getActor() + "\t");
+//            e.print(movie.getGenre() + "\t");
+//            e.print(movie.getReleaseDate() + "\t");
+//            e.print(movie.getImdb() + "\t");
+//            e.print(movie.getRunTime() + "\t");
+//            e.print(movie.getZone() + "\t");
+//            e.print(movie.getLanguage() + "\t");
+//            e.print(movie.getOtherName() + "\t");
+//            e.print(movie.getRating() + "\t");
+//            e.print(movie.getRatingCount() + "\t");
+//            e.print(movie.getFiveStarRating() + "\t");
+//            e.print(movie.getCommentCount() + "\t");
+//            e.print(movie.getReviewCount() + "\t");
 
 //            resultItems.getAll().entrySet().forEach(item -> {
 //                e.print(item.getValue() + "\t");

@@ -1,5 +1,7 @@
 package com.leadingsoft.spider.processor.douban;
 
+import com.leadingsoft.spider.dto.CelebrityDTO;
+import com.leadingsoft.spider.dto.MovieDTO;
 import com.leadingsoft.spider.model.Movie;
 import com.leadingsoft.spider.pipeline.MovieFilePipeline;
 import us.codecraft.webmagic.Page;
@@ -9,6 +11,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,6 +27,8 @@ public class DoubanMovieProcessor implements PageProcessor {
     public static final String URL_POST = "https://movie\\.douban\\.com/subject/\\w+";
 
     public static final String URL_ID_PATTEN = "https://movie\\.douban\\.com/subject/([0-9]+)/";
+
+    public static final String URL_CELEBRITY_PATTEN = "https://movie\\.douban\\.com/celebrity/([0-9]+)/";
 
     private Site site = Site
             .me()
@@ -67,7 +72,7 @@ public class DoubanMovieProcessor implements PageProcessor {
             return;
         }
 
-        Movie movie = new Movie();
+        MovieDTO dto = new MovieDTO();
 
         // 片名
         String name = html.$("div#content h1 span:first-child", "innerHtml").get();
@@ -75,84 +80,118 @@ public class DoubanMovieProcessor implements PageProcessor {
         if(name == null) {
             return;
         }
-        movie.setName(name);
+        dto.setName(name);
         // Url
-        String url = page.getUrl().toString();
-        movie.setUrl(url);
-        // 从Url中取得Id
-        Matcher matcher= Pattern.compile(URL_ID_PATTEN).matcher(url);
-        if(matcher.matches()){
-            movie.setDoubanId(Long.parseLong(matcher.group(1)));
-        }
-
+        dto.setUrl(page.getUrl().toString());
+        // 豆瓣Id
+        dto.setDoubanId(this.getMovieIdFromUrl(dto.getUrl()));
         // 导演
-        List<String> directorList = html.$("div#content div#info span.pl:containsOwn(导演) + span a", "innerHtml").all();
-        if(directorList != null && directorList.size() > 0) {
-            movie.setDirector(Arrays.toString(directorList.toArray()));
-        }
+        dto.setDirectorList(this.getCelebrityList(html, "div#content div#info span.pl:containsOwn(导演) + span a"));
         // 编剧
-        List<String> writerList = html.$("div#content div#info span.pl:containsOwn(编剧) + span a", "innerHtml").all();
-        if(writerList != null && writerList.size() > 0) {
-            movie.setWriter(Arrays.toString(writerList.toArray()));
-        }
+        dto.setWriterList(this.getCelebrityList(html, "div#content div#info span.pl:containsOwn(编剧) + span a"));
         // 主演
-        List<String> actorList = html.$("div#content div#info span.actor a[rel=\"v:starring\"]", "innerHtml").all();
-        if(actorList != null && actorList.size() > 0) {
-            movie.setActor(Arrays.toString(actorList.toArray()));
-        }
+        dto.setActorList(this.getCelebrityList(html, "div#content div#info span.actor a[rel=\"v:starring\"]"));
         // 类型
         List<String> genreList = html.$("div#content div#info span.pl:containsOwn(类型) ~ span[property=\"v:genre\"", "innerHtml").all();
         if(genreList != null && genreList.size() > 0) {
-            movie.setGenre(Arrays.toString(genreList.toArray()));
+            dto.setGenre(Arrays.toString(genreList.toArray()));
         }
         // 上映日期
         List<String> releaseDateList = html.$("div#content div#info span.pl:containsOwn(上映日期) ~ span[property=\"v:initialReleaseDate\"]", "innerHtml").all();
         if(releaseDateList != null && releaseDateList.size() > 0) {
-            movie.setReleaseDate(Arrays.toString(releaseDateList.toArray()));
+            dto.setReleaseDate(Arrays.toString(releaseDateList.toArray()));
         }
         // IMDB
-        movie.setImdb(html.$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").get());
+        dto.setImdb(html.$("div#content div#info span.pl:containsOwn(IMDb链接) + a", "innerHtml").get());
         // 片长
         List<String> runTimeList = html.$("div#content div#info span.pl:containsOwn(片长) + span[property=\"v:runtime\"]", "innerHtml").all();
         if(runTimeList != null && runTimeList.size() > 0) {
-            movie.setRunTime(Arrays.toString(runTimeList.toArray()));
+            dto.setRunTime(Arrays.toString(runTimeList.toArray()));
         }
         // 制片国家/地区
         Selectable zoneRegexResult =  html.regex("制片国家/地区:</span>.*?<br>");
         if(zoneRegexResult != null && zoneRegexResult.toString() != null) {
-            movie.setZone(zoneRegexResult.toString()
+            dto.setZone(zoneRegexResult.toString()
                     .replace("制片国家/地区:</span>", "")
                     .replace("<br>", "").replace("\n", "").trim());
         }
         // 语言
         Selectable langRegexResult = html.regex("语言:</span>.*?<br>");
         if(langRegexResult != null && langRegexResult.toString() != null){
-            movie.setLanguage(langRegexResult.toString()
+            dto.setLanguage(langRegexResult.toString()
                     .replace("语言:</span>", "").replace("<br>", "").replace("\n", "").trim());
         }
         // 又名
         Selectable otherNameRegexResult = html.regex("又名:</span>.*?<br>");
         if(otherNameRegexResult != null && otherNameRegexResult.toString() != null) {
-            movie.setOtherName(otherNameRegexResult.toString()
+            dto.setOtherName(otherNameRegexResult.toString()
                     .replace("又名:</span>", "").replace("<br>", "").replace("\n", "").trim());
         }
         // 评分
-        movie.setRating(html.$("div#interest_sectl strong.rating_num", "innerHtml").get());
+        dto.setRating(html.$("div#interest_sectl strong.rating_num", "innerHtml").get());
         // 评价人数
-        movie.setRatingCount(html.$("div#interest_sectl span[property=\"v:votes\"]", "innerHtml").get());
+        dto.setRatingCount(html.$("div#interest_sectl span[property=\"v:votes\"]", "innerHtml").get());
         // 五星占比
-        movie.setFiveStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(2)", "innerHtml").get());
+        dto.setFiveStarRating(html.$("#interest_sectl > div.rating_wrap.clearbox > span:nth-of-type(2)", "innerHtml").get());
         // 短评数
         String commentCountStr = html.$("#comments-section > div.mod-hd > h2 > span > a", "innerHtml").get();
         if(commentCountStr != null) {
-            movie.setCommentCount(commentCountStr.replace("全部", "").replace("条", ""));
+            dto.setCommentCount(commentCountStr.replace("全部", "").replace("条", ""));
         }
         // 影评数
         String reviewCountStr = html.$("#review_section > div.mod-hd > h2 > span > a", "innerHtml").get();
         if(reviewCountStr != null) {
-            movie.setReviewCount(reviewCountStr.replace("全部", ""));
+            dto.setReviewCount(reviewCountStr.replace("全部", ""));
         }
 
-        page.putField("movie", movie);
+        page.putField("movie", dto);
+    }
+
+
+    /**
+     * 从URL中取得电影Id
+     * @param url
+     * @return
+     */
+    private Long getMovieIdFromUrl(String url) {
+        Matcher matcher= Pattern.compile(URL_ID_PATTEN).matcher(url);
+        if(matcher.matches()){
+            return Long.parseLong(matcher.group(1));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 从页面取得导演信息列表
+     * @param html
+     * @param cssSelector
+     * @return
+     */
+    private List<CelebrityDTO> getCelebrityList(Html html, String cssSelector){
+        List<CelebrityDTO> celebrityList = new ArrayList<CelebrityDTO>();
+
+        List<String> directorLinks = html.$(cssSelector).links().all();
+        List<String> directorNameList = html.$(cssSelector, "innerHtml").all();
+        if(directorLinks != null && directorLinks.size() > 0) {
+            for (int i = 0; i < directorLinks.size(); i++) {
+                CelebrityDTO celebrityDTO = new CelebrityDTO();
+                celebrityDTO.setName(directorNameList.get(i));
+                celebrityDTO.setUrl(directorLinks.get(i));
+                if(celebrityDTO.getUrl() != null) {
+                    Matcher matcher = Pattern.compile(URL_CELEBRITY_PATTEN).matcher(celebrityDTO.getUrl());
+                    // 如果不匹配，就不保存此数据
+                    if(!matcher.matches()){
+                        continue;
+                    }
+                    celebrityDTO.setDoubanId(Long.parseLong(matcher.group(1))); // 如果有url，就应该有匹配的Id
+                } else {
+                    continue;
+                }
+                celebrityList.add(celebrityDTO);
+            }
+        }
+
+        return celebrityList;
     }
 }

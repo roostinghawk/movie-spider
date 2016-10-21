@@ -8,20 +8,20 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * 电影
+ *
  * Created by liuw on 2016/9/30.
  */
 @Getter
 @Setter
 @Entity
 public class Movie extends AbstractPersistable<Long> {
-
-
-    /**
-     * 豆瓣电影中的Id
-     */
-    private Long doubanId;
 
     /**
      * 电影名称
@@ -31,6 +31,10 @@ public class Movie extends AbstractPersistable<Long> {
     @Column(length = 255)
     private String name;
 
+    /**
+     * 豆瓣电影中的Id
+     */
+    private Long doubanId;
 
     /**
      * 电影访问的URL
@@ -40,26 +44,24 @@ public class Movie extends AbstractPersistable<Long> {
     @Column(length = 1000)
     private String url;
 
+
     /**
      * 导演
      */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String director;
+    @ManyToMany
+    private List<Celebrity> directorList = new ArrayList<>();
 
     /**
      * 编剧
      */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String writer;
+    @ManyToMany
+    private List<Celebrity> writerList = new ArrayList<>();
 
     /**
      * 主演
      */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String actor;
+    @ManyToMany
+    private List<Celebrity> actorList = new ArrayList<>();
 
 
     /**
@@ -91,7 +93,7 @@ public class Movie extends AbstractPersistable<Long> {
     private String runTime;
 
     /**
-     * 制片
+     * 制片 (暂时不需要此字段)
      */
     @Length(max = 255)
     @Column(length = 255)
@@ -119,38 +121,9 @@ public class Movie extends AbstractPersistable<Long> {
     private String otherName;
 
     /**
-     * 评分
+     * 豆瓣中的电影评价
      */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String rating;
-
-    /**
-     * 评价人数
-     */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String ratingCount;
-
-    /**
-     * 五星评比
-     */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String fiveStarRating;
-
-    /**
-     * 短评数
-     */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String CommentCount;
-
-    /**
-     * 影评数
-     */
-    @Length(max = 255)
-    @Column(length = 255)
-    private String reviewCount;
+    @OneToOne
+    private MovieReview movieReview;
 
 }
